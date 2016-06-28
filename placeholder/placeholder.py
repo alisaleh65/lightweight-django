@@ -1,18 +1,17 @@
 import os
 import hashlib
 import sys
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", __name__)
-from django.conf import settings
+# این ماژول را به عنوان ماژول تنظیمات معرفی می کنیم.
+os.environ["DJANGO_SETTINGS_MODULE"]=__name__
+SECRET_KEY = '(ain*0-al(%h347@dqj$#952s+izs#2rt&&xn-w--k0dn1xmu+'
 
+
+# اگر با export DEBUG=off حالت دیباگ را غیر فعال کرده باشند آن را اعمال می کنیم.
 DEBUG = os.environ.get('DEBUG', 'on') == 'on'
 print("debug is ", DEBUG)
 
-SECRET_KEY = os.environ.get('SECRET_KET', '(ain*0-al(%h347@dqj$#952s+izs#2rt&&xn-w--k0dn1xmu+')
-
+# با تنظیم ALLOWED_HOSTS می توانیم درستی درخواست HTTP HOST دریافتی را ارزیابی کنیم.
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
-
-
-ROOT_URLCONF=__name__
 
 
 MIDDLEWARE_CLASSES = (
@@ -42,20 +41,37 @@ STATICFILES_DIRS = (
 
 STATIC_URL = '/static/'
 
+# همین ماژول را به عنوان ماژول تنظیمات url مشخص میکنیم.
+
+ROOT_URLCONF=__name__
 
 
+# تجربه نشان داد که اگر قبل این import ها تنظیمات انجام نشود ، دیگر انجام نخواهد شد :))
+
+from io import BytesIO
+from PIL import Image, ImageDraw
+from django import forms
 from django.conf.urls import url
+from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.http import etag
+from django.core.urlresolvers import reverse
+from django.shortcuts import render
+from django.core.wsgi import get_wsgi_application
 
-from django import forms
 
 
-from io import BytesIO
 
-from PIL import Image, ImageDraw
-
+# با این متد کار view را انجام می دهیم.
+def index(request):
+    example = reverse('placeholder', kwargs={'width':50, 'height':50})
+    context = {
+        'example': request.build_absolute_uri(example)
+    }
+    
+    return render(request, 'home.html', context)
+    
 
 class ImageForm(forms.Form):
     ''' form to validate requested placeholder image.'''
@@ -90,18 +106,8 @@ class ImageForm(forms.Form):
         return content
 
 
-from django.core.urlresolvers import reverse
-from django.shortcuts import render
-
-def index(request):
-    example = reverse('placeholder', kwargs={'width':50, 'height':50})
-    context = {
-        'example': request.build_absolute_uri(example)
-    }
     
-    return render(request, 'home.html', context)
-    
-    
+# مزیت استفاده از etag در مقایسه با cache این است که مرورگر خود کار cache سمت سرور را انجام می دهد، ولی استفاده از آن دقت می خواهد.
 def generate_etag(request, width, height):
     content = 'Placeholder: {0}x{1}'.format(width, height)
     return hashlib.sha1(content.encode('utf-8')).hexdigest()
@@ -117,35 +123,18 @@ def placeholder(request, width, height):
         return HttpResponse(image, content_type='image/png')
     else:
         return HttpResponse("Invalid Image request.")
-  
-urlpatterns = (
-    url(r'^image/(?P<width>[0-9]+)x(?P<height>[0-9]+)/$', placeholder,  name='placeholder'),
-    url(r'^$', index, name='homepage'),
-)
+        
 
 # set WSGI
-
-from django.core.wsgi import get_wsgi_application
-
 application = get_wsgi_application()
 
+urlpatterns = (
+    url(r'^placeholder/(?P<width>[0-9]+)x(?P<height>[0-9]+)/$', placeholder,  name='placeholder'),
+    url(r'^$', index, name='homepage'),
+)
 
 
 if __name__ == '__main__':
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

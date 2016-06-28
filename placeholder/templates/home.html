@@ -1,24 +1,24 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html>
+<html lang="fa" >
 <head>
     <meta charset="utf-8">
-    <title>Django Placeholder Image.</title>
+    <title>Django Placeholder Images</title>
     <link rel="stylesheet" href="{% static 'site.css' %}" type="text/css">
 </head>
 
 <body>
-    <h1>Django Placeholder Images</h1>
-    <p>This server can be used for serving placeholder images for any webpage.
+    <h1 dir="rtl">فضا نگهدار با DJANGO</h1>
+    <p dir="rtl">این سرور برای ارائه عکس هایی با اندازه دلخواه برای استفاده های صرفا فضا گیری ایجاد شده.
     </p>
-    <p>To request a placeholder of given width and height simply include an image with the source pointing to
-    <b>/placeholder/&lt;width&gt;x&lt;height&gt;/</b>
-    on this server such as :
+    <p dir="rtl">برای استفاده از این سرور کافی است درخواست خود را به صورت پایین ارسال کنید.
+    <p>/placeholder/&lt;width&gt;x&lt;height&gt;/</p>
+    اگر می خواهید یک تصویر از sever ما را در وبسایت خود داشته باشید می توانید از نمونه کد زیر استفاده کنید.
     </p>
     <pre>
         &lt;img src="{{ example }}"&gt;
     </pre>
-    <h2>Examples</h2>
+    <h2>نمونه ها</h2>
     <ul>
         <li><img src="{% url 'placeholder' width=50 height=50 %}"></li>
         <li><img src="{% url 'placeholder' width=100 height=50 %}"></li>
