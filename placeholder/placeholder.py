@@ -1,7 +1,7 @@
 import os
 import hashlib
 import sys
-
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", __name__)
 from django.conf import settings
 
 DEBUG = os.environ.get('DEBUG', 'on') == 'on'
@@ -12,17 +12,18 @@ SECRET_KEY = os.environ.get('SECRET_KET', '(ain*0-al(%h347@dqj$#952s+izs#2rt&&xn
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 
-settings.configure(
-    DEBUG=DEBUG,
-    SECRET_KEY=SECRET_KEY,
-    ALLOWED_HOSTS=ALLOWED_HOSTS,
-    ROOT_URLCONF=__name__,
-    MIDDLEWARE_CLASS=(
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-    ),
+ROOT_URLCONF=__name__
+
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 )
 
 
@@ -100,7 +101,9 @@ urlpatterns = (
 # set WSGI
 
 from django.core.wsgi import get_wsgi_application
+
 application = get_wsgi_application()
+
 
 
 if __name__ == '__main__':
