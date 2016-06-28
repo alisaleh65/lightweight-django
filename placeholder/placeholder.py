@@ -26,6 +26,23 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+BASE_DIR = os.path.dirname(__file__)
+
+INSTALLED_APPS = (
+    'django.contrib.staticfiles',
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+STATIC_URL = '/static/'
+
+
 
 from django.conf.urls import url
 from django.core.cache import cache
@@ -71,10 +88,18 @@ class ImageForm(forms.Form):
         else:
             print("hit")
         return content
-    
+
+
+from django.core.urlresolvers import reverse
+from django.shortcuts import render
 
 def index(request):
-    return HttpResponse("Hello World")
+    example = reverse('placeholder', kwargs={'width':50, 'height':50})
+    context = {
+        'example': request.build_absolute_uri(example)
+    }
+    
+    return render(request, 'home.html', context)
     
     
 def generate_etag(request, width, height):
