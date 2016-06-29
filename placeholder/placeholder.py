@@ -1,6 +1,8 @@
 import os
 import hashlib
 import sys
+
+
 # این ماژول را به عنوان ماژول تنظیمات معرفی می کنیم.
 os.environ["DJANGO_SETTINGS_MODULE"]=__name__
 SECRET_KEY = '(ain*0-al(%h347@dqj$#952s+izs#2rt&&xn-w--k0dn1xmu+'
@@ -52,15 +54,12 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from django import forms
 from django.conf.urls import url
-from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.http import etag
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.core.wsgi import get_wsgi_application
-
-
 
 
 # با این متد کار view را انجام می دهیم.
