@@ -10,7 +10,7 @@ from django.utils._os import safe_join
 def get_page_or_404(name):
 
     try:
-        file_path = safe_join(settings.PAGES_DIRECTORY, name)
+        file_path = safe_join(settings.SITE_PAGES_DIRECTORY, name)
     except ValueError:
         raise Http404('Page Not Found.')
     else:
@@ -18,7 +18,7 @@ def get_page_or_404(name):
             raise Http404('Page Not Found.')
     
     with open(file_path, 'r') as f:
-        page = Template(f.read)
+        page = Template(f.read())
     
     
     return page
