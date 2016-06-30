@@ -6,7 +6,15 @@ from django.shortcuts import render
 from django.template import Template
 from django.utils._os import safe_join
 
-
+    
+def page(request, slug='index'):
+    
+    file_name = '{}.html'.format(slug)
+    page = get_page_or_404(file_name)
+    context = {'slug': slug, 'page': page}
+    
+    return render(request, 'page.html', context)
+    
 def get_page_or_404(name):
 
     try:
@@ -22,13 +30,4 @@ def get_page_or_404(name):
     
     
     return page
-    
-    
-def page(request, slug='index'):
-    
-    file_name = '{}.html'.format(slug)
-    page = get_page_or_404(file_name)
-    context = {'slug': slug, 'page': page}
-    
-    return render(request, 'page.html', context)
-    
+
