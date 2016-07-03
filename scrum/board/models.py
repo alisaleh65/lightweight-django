@@ -7,7 +7,7 @@ class Sprint(models.Model):
     """Developement iteration period."""
     
     name = models.CharField(max_length=100, blank=True, default='')
-    desciption = models.TextField(blank=True, default='')
+    description = models.TextField(blank=True, default='')
     end = models.DateField(unique=True)
     
     def __str__(self):
