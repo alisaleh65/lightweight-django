@@ -42,11 +42,13 @@ class SprintSerializer(serializers.ModelSerializer):
             'tasks': reverse('task-list', request=request) + '?sprint={}'.format(obj.pk),
         }
         
-    def validate_end(self, end_date):
-        if end_date < date.today():
+    def validate_end(self, value):
+        new = self.instance is None
+        updated = not new and self.initial_data['end'] != self.instance.end
+        if (new or updated) and value < date.today():
             msg = _('End date cannot be in the past.')
             raise serializers.ValidationError(msg)
-        return attrs
+        return value
 
 class TaskSerializer(serializers.ModelSerializer):
     assigned = serializers.SlugRelatedField(slug_field=User.USERNAME_FIELD, required=False, read_only=True)
@@ -76,6 +78,36 @@ class TaskSerializer(serializers.ModelSerializer):
         if obj.assigned:
             links['assigned'] = reverse('user-detail', kwargs={User.USERNAME_FIELD: obj.assigned}, request=request)
         return links
-  
+        
+    def validate_sprint(self, value):
+        orig_task = getattr(self, 'instance', None)
+        orig_sprint = getattr(orig_task, 'sprint', None)
+        sprint = value
+        if (getattr(orig_sprint, 'id', None) != getattr(sprint, 'id', None) and
+                int(self.initial_data['status']) == Task.STATUS_DONE):
+            raise serializers.ValidationError(_('Cannot change the sprint of a completed task.'))
+        if getattr(sprint, 'end', date.today()) < date.today():
+            raise serializers.ValidationError(_('Cannot assign tasks to past sprints'))
+        return value
+        
+    def validate(self, data):
+        sprint = data.get('sprint', None)
+        status = data.get('status', None)
+        started = data.get('started', None)
+        completed = data.get('completed', None)
+        if not sprint and status != Task.STATUS_TODO:
+            raise serializers.ValidationError(_('Backlog tasks must have "Not Started" status.'))
+        if started and status == Task.STATUS_TODO:
+            raise serializers.ValidationError(_('"Not Started" tasks cannot have a start date.'))
+        if completed and status != Task.STATUS_DONE:
+            raise serializers.ValidationError(
+                _('Completed date cannot be set for incomplete tasks.'))
+        if status == Task.STATUS_DONE and not completed:
+            raise serializers.ValidationError(_('Completed tasks must have a completed date'))
+        return data
+        
+        
+        
+        
         
         
